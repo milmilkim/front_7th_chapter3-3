@@ -87,9 +87,18 @@ const PostsManager = () => {
     }
     setLoading(true)
     try {
-      const data = await postApi.searchPosts(searchQuery)
-      setPosts(data.posts)
-      setTotal(data.total)
+      const [postsData, usersData] = await Promise.all([
+        postApi.searchPosts(searchQuery),
+        userApi.fetchUsers({ limit: 0, select: "username,image" }),
+      ])
+
+      const postsWithUsers = postsData.posts.map((post) => ({
+        ...post,
+        author: usersData.users.find((user) => user.id === post.userId),
+      }))
+
+      setPosts(postsWithUsers)
+      setTotal(postsData.total)
     } catch (error) {
       console.error("게시물 검색 오류:", error)
     } finally {
@@ -138,7 +147,8 @@ const PostsManager = () => {
   const handleAddPost = async (data: { title: string; body: string; userId: number }) => {
     try {
       const newPost = await postApi.createPost(data)
-      setPosts([newPost, ...posts])
+      const author = await userApi.fetchUser(data.userId)
+      setPosts([{ ...newPost, author }, ...posts])
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }
