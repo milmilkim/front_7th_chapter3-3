@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Edit2, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components"
 import { DeletePostButton } from "../../features/delete-post"
@@ -12,7 +13,7 @@ interface PostsTableProps {
   onEditPost: (post: Post) => void
   onDeletePost: (id: number) => void
   onUserClick: (user: any) => void
-  highlightText: (text: string, highlight: string) => JSX.Element | null
+  highlightText: (text: string, highlight: string) => React.ReactElement | null
 }
 
 export const PostsTable = ({

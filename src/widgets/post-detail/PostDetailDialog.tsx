@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components"
 import { CommentsList } from "../comments-list"
 import type { Post } from "../../entities/post"
@@ -13,7 +14,7 @@ interface PostDetailDialogProps {
   onEditComment: (comment: Comment) => void
   onDeleteComment: (id: number, postId: number) => void
   onLikeComment: (id: number, postId: number) => void
-  highlightText: (text: string, highlight: string) => JSX.Element | null
+  highlightText: (text: string, highlight: string) => React.ReactElement | null
 }
 
 export const PostDetailDialog = ({

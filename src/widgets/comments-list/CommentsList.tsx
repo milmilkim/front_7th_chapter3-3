@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Edit2, Plus } from "lucide-react"
 import { Button } from "../../components"
 import { DeleteCommentButton } from "../../features/delete-comment"
@@ -12,7 +13,7 @@ interface CommentsListProps {
   onEditComment: (comment: Comment) => void
   onDeleteComment: (id: number, postId: number) => void
   onLikeComment: (id: number, postId: number) => void
-  highlightText: (text: string, highlight: string) => JSX.Element | null
+  highlightText: (text: string, highlight: string) => React.ReactElement | null
 }
 
 export const CommentsList = ({
