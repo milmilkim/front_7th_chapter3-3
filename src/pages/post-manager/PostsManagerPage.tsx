@@ -251,7 +251,7 @@ const PostsManager = () => {
   }
 
   // 사용자 모달 열기
-  const openUserModal = async (user: any) => {
+  const openUserModal = async (user: User) => {
     try {
       const userData = await userApi.fetchUser(user.id)
       setSelectedUser(userData)
