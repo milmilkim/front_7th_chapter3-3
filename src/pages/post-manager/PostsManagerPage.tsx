@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Plus } from "lucide-react"
-import { Button, Card, CardContent, CardHeader, CardTitle } from "../../components"
+import { Button, Card, CardContent, CardHeader, CardTitle } from "../../shared/ui"
 import { postApi } from "../../entities/post"
 import { commentApi } from "../../entities/comment"
 import { userApi } from "../../entities/user"

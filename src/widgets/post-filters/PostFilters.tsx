@@ -1,5 +1,5 @@
 import { Search } from "lucide-react"
-import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components"
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../shared/ui"
 import type { Tag } from "../../entities/tag"
 
 interface PostFiltersProps {

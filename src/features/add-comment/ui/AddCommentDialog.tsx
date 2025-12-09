@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../components"
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
 
 interface AddCommentDialogProps {
   open: boolean

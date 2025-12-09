@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
 import { CommentsList } from "../comments-list"
 import type { Post } from "../../entities/post"
 import type { Comment } from "../../entities/comment"
