@@ -1,4 +1,5 @@
 # Chapter3-3. 기능 중심 아키텍처와 프로젝트 폴더구조
+https://milmilkim.github.io/front_7th_chapter3-3/
 
 ## [3주차] 기본과제
 
