@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
-import { useUIStore, usePostsStore } from "../../../shared/store"
-import { useAddComment } from "../../../entities/comment"
+import { useUIStore, usePostsStore } from "../../../app/store"
+import { useAddComment } from "../model/useAddComment"
 
 export const AddCommentDialog = () => {
   const { isModalOpen, closeModal } = useUIStore()

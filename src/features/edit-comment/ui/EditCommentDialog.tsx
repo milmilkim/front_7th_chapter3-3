@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
-import { useUIStore, usePostsStore } from "../../../shared/store"
-import { useUpdateComment, useComments } from "../../../entities/comment"
+import { useUIStore, usePostsStore } from "../../../app/store"
+import { useComments } from "../../../entities/comment"
+import { useUpdateComment } from "../model/useUpdateComment"
 
 export const EditCommentDialog = () => {
   const { isModalOpen, closeModal } = useUIStore()

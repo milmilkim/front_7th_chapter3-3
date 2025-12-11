@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
 import { CommentsList } from "../comments-list"
-import { useUIStore, usePostsStore } from "../../shared/store"
+import { useUIStore, usePostsStore } from "../../app/store"
 import { useComments } from "../../entities/comment"
 import { useQueryParams } from "../../shared/hooks"
 import { highlightText } from "../../shared/lib"

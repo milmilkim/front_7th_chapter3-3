@@ -1,2 +1,2 @@
-export { useUIStore } from './uiStore'
 export { usePostsStore } from './postsStore'
+export { useUIStore } from './uiStore'

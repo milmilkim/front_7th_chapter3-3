@@ -1,6 +1,6 @@
 import { ThumbsUp } from "lucide-react"
 import { Button } from "../../../shared/ui"
-import { useLikeComment } from "../../../entities/comment"
+import { useLikeComment } from "../model/useLikeComment"
 
 interface LikeCommentButtonProps {
   commentId: number

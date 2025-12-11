@@ -3,7 +3,7 @@ import { Button } from "../../shared/ui"
 import { DeleteCommentButton } from "../../features/delete-comment"
 import { LikeCommentButton } from "../../features/like-comment"
 import type { Comment } from "../../entities/comment"
-import { useUIStore, usePostsStore } from "../../shared/store"
+import { useUIStore, usePostsStore } from "../../app/store"
 import { useQueryParams } from "../../shared/hooks"
 import { highlightText as highlightTextUtil } from "../../shared/lib"
 

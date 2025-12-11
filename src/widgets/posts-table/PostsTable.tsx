@@ -2,7 +2,7 @@ import { Edit2, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../shared/ui"
 import { DeletePostButton } from "../../features/delete-post"
 import type { Post } from "../../entities/post"
-import { useUIStore, usePostsStore } from "../../shared/store"
+import { useUIStore, usePostsStore } from "../../app/store"
 import { useQueryParams } from "../../shared/hooks"
 import { highlightText } from "../../shared/lib"
 

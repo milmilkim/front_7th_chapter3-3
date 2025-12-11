@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
-import { useUIStore } from "../../../shared/store"
-import { useAddPost } from "../../../entities/post"
+import { useUIStore } from "../../../app/store"
+import { useAddPost } from "../model/useAddPost"
 
 export const AddPostDialog = () => {
   const { isModalOpen, closeModal } = useUIStore()

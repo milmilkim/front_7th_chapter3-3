@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
-import { useUIStore, usePostsStore } from "../../shared/store"
+import { useUIStore, usePostsStore } from "../../app/store"
 import { useUserDetail } from "../../entities/user"
 
 export const UserModal = () => {

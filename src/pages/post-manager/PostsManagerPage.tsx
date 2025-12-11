@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { Plus } from "lucide-react"
 import { Button, Card, CardContent, CardHeader, CardTitle } from "../../shared/ui"
-import { useUIStore } from "../../shared/store"
+import { useUIStore } from "../../app/store"
 import { AddPostDialog } from "../../features/add-post"
 import { EditPostDialog } from "../../features/edit-post"
 import { AddCommentDialog } from "../../features/add-comment"
