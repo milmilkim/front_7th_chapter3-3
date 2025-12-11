@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
 import { useUIStore, usePostsStore } from "../../../shared/store"
-import { useUpdateComment } from "../../../entities/comment"
+import { useUpdateComment, useComments } from "../../../entities/comment"
 
 export const EditCommentDialog = () => {
   const { isModalOpen, closeModal } = useUIStore()
   const { selectedComment } = usePostsStore()
   const updateCommentMutation = useUpdateComment()
+  
+  const { data: comments = [] } = useComments(selectedComment?.postId || 0, !!selectedComment)
   
   const [body, setBody] = useState("")
 
@@ -16,14 +18,26 @@ export const EditCommentDialog = () => {
     }
   }, [selectedComment])
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (selectedComment) {
-      await updateCommentMutation.mutateAsync({
-        id: selectedComment.id,
-        body,
-        postId: selectedComment.postId,
-      })
+      // 현재 댓글의 인덱스 찾기
+      const commentIndex = comments.findIndex(c => c.id === selectedComment.id)
+      
       closeModal("editComment")
+      updateCommentMutation.mutate(
+        {
+          id: selectedComment.id,
+          index: commentIndex,
+          body,
+          postId: selectedComment.postId,
+        },
+        {
+          onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : "댓글 수정에 실패했습니다."
+            alert(errorMessage)
+          },
+        }
+      )
     }
   }
 

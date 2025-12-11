@@ -36,13 +36,21 @@ export const postApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '게시물 수정에 실패했습니다.')
+    }
     return response.json()
   },
 
   // 게시물 삭제
   async deletePost(id: number): Promise<void> {
-    await fetch(`/api/posts/${id}`, {
+    const response = await fetch(`/api/posts/${id}`, {
       method: 'DELETE',
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '게시물 삭제에 실패했습니다.')
+    }
   },
 }

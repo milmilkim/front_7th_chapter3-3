@@ -18,10 +18,18 @@ export const EditPostDialog = () => {
     }
   }, [selectedPost])
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (selectedPost) {
-      await updatePostMutation.mutateAsync({ id: selectedPost.id, data: { title, body } })
       closeModal("editPost")
+      updatePostMutation.mutate(
+        { id: selectedPost.id, data: { title, body } },
+        {
+          onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : "게시물 수정에 실패했습니다."
+            alert(errorMessage)
+          },
+        }
+      )
     }
   }
 

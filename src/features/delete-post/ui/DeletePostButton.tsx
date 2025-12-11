@@ -9,8 +9,13 @@ interface DeletePostButtonProps {
 export const DeletePostButton = ({ postId }: DeletePostButtonProps) => {
   const deletePostMutation = useDeletePost()
 
-  const handleDelete = async () => {
-    await deletePostMutation.mutateAsync(postId)
+  const handleDelete = () => {
+    deletePostMutation.mutate(postId, {
+      onError: (error: unknown) => {
+        const errorMessage = error instanceof Error ? error.message : "게시물 삭제에 실패했습니다."
+        alert(errorMessage)
+      },
+    })
   }
 
   return (

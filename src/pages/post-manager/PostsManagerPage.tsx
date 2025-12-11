@@ -32,7 +32,7 @@ const PostsManager = () => {
   if (searchQuery) {
     currentPostsData = searchPostsQuery.data
     isLoading = searchPostsQuery.isLoading
-  } else if (selectedTag) {
+  } else if (selectedTag && selectedTag !== "all") {
     currentPostsData = tagQuery.data
     isLoading = tagQuery.isLoading
   } else {

@@ -17,6 +17,10 @@ export const commentApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '댓글 생성에 실패했습니다.')
+    }
     return response.json()
   },
 
@@ -27,14 +31,22 @@ export const commentApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '댓글 수정에 실패했습니다.')
+    }
     return response.json()
   },
 
   // 댓글 삭제
   async deleteComment(id: number): Promise<void> {
-    await fetch(`/api/comments/${id}`, {
+    const response = await fetch(`/api/comments/${id}`, {
       method: 'DELETE',
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '댓글 삭제에 실패했습니다.')
+    }
   },
 
   // 댓글 좋아요
@@ -44,6 +56,10 @@ export const commentApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ likes: currentLikes + 1 }),
     })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || '좋아요에 실패했습니다.')
+    }
     return response.json()
   },
 }

@@ -84,7 +84,40 @@ export const useAddPost = () => {
       const author = await userApi.fetchUser(data.userId)
       return { ...newPost, author }
     },
+    onMutate: (data) => {
+      // 낙관적 업데이트: 캐시 바로 수정
+      queryClient.setQueriesData(
+        {
+          queryKey: ["posts"],
+          predicate: (query) => {
+            const params = query.queryKey[1] as { skip: number; limit: number } | undefined
+            return params?.skip === 0
+          },
+        },
+        (old: PostsResponse | undefined) => {
+          if (!old) return old
+          
+          const tempPost = {
+            id: old.total + 1,
+            title: data.title,
+            body: data.body,
+            userId: data.userId,
+            tags: [],
+            reactions: { likes: 0, dislikes: 0 },
+            views: 0,
+            author: undefined,
+          }
+
+          return {
+            ...old,
+            posts: [tempPost, ...old.posts],
+            total: old.total + 1,
+          }
+        }
+      )
+    },
     onSuccess: (newPost) => {
+      // 실제 서버 응답으로 교체
       queryClient.setQueriesData(
         {
           queryKey: ["posts"],
@@ -97,8 +130,7 @@ export const useAddPost = () => {
           if (!old) return old
           return {
             ...old,
-            posts: [newPost, ...old.posts],
-            total: old.total + 1,
+            posts: old.posts.map((post, index) => (index === 0 ? newPost : post)),
           }
         }
       )
@@ -114,13 +146,13 @@ export const useUpdatePost = () => {
     mutationFn: async ({ id, data }: { id: number; data: { title: string; body: string } }) => {
       return await postApi.updatePost(id, data)
     },
-    onSuccess: (updatedPost, { id }) => {
-      // 모든 posts 쿼리 캐시 업데이트
+    onMutate: ({ id, data }) => {
+      // 낙관적 업데이트: 캐시 바로 수정
       queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
         if (!old) return old
         return {
           ...old,
-          posts: old.posts.map((post: Post) => (post.id === id ? { ...post, ...updatedPost } : post)),
+          posts: old.posts.map((post: Post) => (post.id === id ? { ...post, ...data } : post)),
         }
       })
     },
@@ -136,13 +168,13 @@ export const useDeletePost = () => {
       await postApi.deletePost(id)
       return id
     },
-    onSuccess: (deletedId) => {
-      // 모든 posts 쿼리 캐시 업데이트
+    onMutate: (id) => {
+      // 낙관적 업데이트: 캐시 바로 수정
       queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
         if (!old) return old
         return {
           ...old,
-          posts: old.posts.filter((post: Post) => post.id !== deletedId),
+          posts: old.posts.filter((post: Post) => post.id !== id),
           total: old.total - 1,
         }
       })

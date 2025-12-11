@@ -4,14 +4,23 @@ import { useDeleteComment } from "../../../entities/comment"
 
 interface DeleteCommentButtonProps {
   commentId: number
+  commentIndex: number
   postId: number
 }
 
-export const DeleteCommentButton = ({ commentId, postId }: DeleteCommentButtonProps) => {
+export const DeleteCommentButton = ({ commentId, commentIndex, postId }: DeleteCommentButtonProps) => {
   const deleteCommentMutation = useDeleteComment()
 
-  const handleDelete = async () => {
-    await deleteCommentMutation.mutateAsync({ id: commentId, postId })
+  const handleDelete = () => {
+    deleteCommentMutation.mutate(
+      { id: commentId, index: commentIndex, postId },
+      {
+        onError: (error: unknown) => {
+          const errorMessage = error instanceof Error ? error.message : "댓글 삭제에 실패했습니다."
+          alert(errorMessage)
+        },
+      }
+    )
   }
 
   return (

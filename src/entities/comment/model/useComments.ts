@@ -22,13 +22,30 @@ export const useAddComment = () => {
     mutationFn: async (data: { body: string; postId: number; userId: number }) => {
       return await commentApi.createComment(data)
     },
-    onSuccess: (newComment, variables) => {
-      // 캐시 직접 업데이트 (fake JSON이라 서버에 저장 안 됨)
+    onMutate: (variables) => {
+      // 낙관적 업데이트: 임시 댓글 추가
+      const tempComment = {
+        id: -Date.now(),
+        body: variables.body,
+        postId: variables.postId,
+        likes: 0,
+        user: undefined,
+      }
+      
       queryClient.setQueryData(["comments", variables.postId], (old: Comment[] | undefined) => {
-        // likes 필드가 없으면 0으로 초기화
+        if (!old) return [tempComment]
+        return [...old, tempComment]
+      })
+    },
+    onSuccess: (newComment, variables) => {
+      queryClient.setQueryData(["comments", variables.postId], (old: Comment[] | undefined) => {
+        if (!old || old.length === 0) return old
+        
         const commentWithLikes = { ...newComment, likes: newComment.likes || 0 }
-        if (!old) return [commentWithLikes]
-        return [...old, commentWithLikes]
+        const newComments = [...old]
+        newComments[newComments.length - 1] = commentWithLikes
+        
+        return newComments
       })
     },
   })
@@ -39,14 +56,15 @@ export const useUpdateComment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, body }: { id: number; body: string; postId: number }) => {
+    mutationFn: async ({ id, body }: { id: number; index: number; body: string; postId: number }) => {
       return await commentApi.updateComment(id, { body })
     },
-    onSuccess: (updatedComment, variables) => {
-      // 캐시 직접 업데이트
+    onMutate: (variables) => {
       queryClient.setQueryData(["comments", variables.postId], (old: Comment[] | undefined) => {
         if (!old) return old
-        return old.map((comment: Comment) => (comment.id === variables.id ? { ...comment, ...updatedComment } : comment))
+        return old.map((comment, idx) =>
+          idx === variables.index ? { ...comment, body: variables.body } : comment
+        )
       })
     },
   })
@@ -57,15 +75,14 @@ export const useDeleteComment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, postId }: { id: number; postId: number }) => {
+    mutationFn: async ({ id, postId }: { id: number; index: number; postId: number }) => {
       await commentApi.deleteComment(id)
       return { id, postId }
     },
-    onSuccess: (_, variables) => {
-      // 캐시 직접 업데이트
+    onMutate: (variables) => {
       queryClient.setQueryData(["comments", variables.postId], (old: Comment[] | undefined) => {
         if (!old) return old
-        return old.filter((comment: Comment) => comment.id !== variables.id)
+        return old.filter((_, idx) => idx !== variables.index)
       })
     },
   })
@@ -76,29 +93,16 @@ export const useLikeComment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, likes }: { id: number; likes: number; postId: number }) => {
+    mutationFn: async ({ id, likes }: { id: number; index: number; likes: number; postId: number }) => {
       return await commentApi.likeComment(id, likes)
     },
-    onMutate: async (variables) => {
-      // Optimistic update: API 호출 전에 먼저 캐시 업데이트
-      await queryClient.cancelQueries({ queryKey: ["comments", variables.postId] })
-
-      const previousComments = queryClient.getQueryData<Comment[]>(["comments", variables.postId])
-
+    onMutate: (variables) => {
       queryClient.setQueryData(["comments", variables.postId], (old: Comment[] | undefined) => {
         if (!old) return old
-        return old.map((comment: Comment) =>
-          comment.id === variables.id ? { ...comment, likes: (comment.likes || 0) + 1 } : comment
+        return old.map((comment, idx) =>
+          idx === variables.index ? { ...comment, likes: (comment.likes || 0) + 1 } : comment
         )
       })
-
-      return { previousComments, postId: variables.postId }
-    },
-    onError: (_err, _variables, context?: { previousComments?: Comment[]; postId: number }) => {
-      // 에러 발생 시 롤백
-      if (context?.previousComments) {
-        queryClient.setQueryData(["comments", context.postId], context.previousComments)
-      }
     },
   })
 }

@@ -11,12 +11,12 @@ export const AddPostDialog = () => {
   const [body, setBody] = useState("")
   const [userId, setUserId] = useState(1)
 
-  const handleSubmit = async () => {
-    await addPostMutation.mutateAsync({ title, body, userId })
+  const handleSubmit = () => {
     setTitle("")
     setBody("")
     setUserId(1)
     closeModal("addPost")
+    addPostMutation.mutate({ title, body, userId })
   }
 
   const open = isModalOpen("addPost")

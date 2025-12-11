@@ -10,10 +10,18 @@ export const AddCommentDialog = () => {
   
   const [body, setBody] = useState("")
 
-  const handleSubmit = async () => {
-    await addCommentMutation.mutateAsync({ body, postId: currentPostId, userId: 1 })
+  const handleSubmit = () => {
     setBody("")
     closeModal("addComment")
+    addCommentMutation.mutate(
+      { body, postId: currentPostId, userId: 1 },
+      {
+        onError: (error: unknown) => {
+          const errorMessage = error instanceof Error ? error.message : "댓글 추가에 실패했습니다."
+          alert(errorMessage)
+        },
+      }
+    )
   }
 
   const open = isModalOpen("addComment")
