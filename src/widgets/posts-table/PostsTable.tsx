@@ -12,7 +12,7 @@ interface PostsTableProps {
   onPostDetail: (post: Post) => void
   onEditPost: (post: Post) => void
   onDeletePost: (id: number) => void
-  onUserClick: (user: any) => void
+  onUserClick: (author: { id: number; username: string; image: string }) => void
   highlightText: (text: string, highlight: string) => React.ReactElement | null
 }
 
@@ -64,7 +64,10 @@ export const PostsTable = ({
               </div>
             </TableCell>
             <TableCell>
-              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => onUserClick(post.author)}>
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => post.author && onUserClick(post.author)}
+              >
                 <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
                 <span>{post.author?.username}</span>
               </div>

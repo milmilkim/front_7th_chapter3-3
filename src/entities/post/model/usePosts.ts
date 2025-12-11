@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { postApi } from "../api"
-import type { Post } from "../types"
+import type { Post, PostsResponse } from "../types"
 import { userApi } from "../../user/api"
 
 // 게시물 목록 조회
@@ -86,7 +86,7 @@ export const useAddPost = () => {
     },
     onSuccess: (newPost) => {
       // 모든 posts 쿼리 캐시 업데이트 (fake JSON이라 서버에 저장 안 됨)
-      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
         if (!old) return old
         return {
           ...old,
@@ -108,7 +108,7 @@ export const useUpdatePost = () => {
     },
     onSuccess: (updatedPost, { id }) => {
       // 모든 posts 쿼리 캐시 업데이트
-      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
         if (!old) return old
         return {
           ...old,
@@ -130,7 +130,7 @@ export const useDeletePost = () => {
     },
     onSuccess: (deletedId) => {
       // 모든 posts 쿼리 캐시 업데이트
-      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
         if (!old) return old
         return {
           ...old,

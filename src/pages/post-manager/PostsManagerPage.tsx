@@ -3,7 +3,6 @@ import { Plus } from "lucide-react"
 import { Button, Card, CardContent, CardHeader, CardTitle } from "../../shared/ui"
 import type { Post } from "../../entities/post"
 import type { Comment } from "../../entities/comment"
-import type { User } from "../../entities/user"
 import { useUIStore } from "../../shared/store"
 import { AddPostDialog } from "../../features/add-post"
 import { EditPostDialog } from "../../features/edit-post"
@@ -118,8 +117,8 @@ const PostsManager = () => {
     openModal("postDetail")
   }
 
-  const openUserModal = (user: User) => {
-    setSelectedUserId(user.id)
+  const openUserModal = (author: { id: number; username: string; image: string }) => {
+    setSelectedUserId(author.id)
     openModal("userModal")
   }
 
