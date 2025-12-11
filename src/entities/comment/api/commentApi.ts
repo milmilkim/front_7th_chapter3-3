@@ -1,9 +1,10 @@
 import type { Comment, CommentsResponse, CreateCommentDto, UpdateCommentDto } from '../types'
+import { getApiUrl } from '../../../shared/lib'
 
 export const commentApi = {
   // 게시물의 댓글 조회
   async fetchComments(postId: number): Promise<CommentsResponse> {
-    const response = await fetch(`/api/comments/post/${postId}`)
+    const response = await fetch(getApiUrl(`/comments/post/${postId}`))
     if (!response.ok) {
       return { comments: [], total: 0, skip: 0, limit: 0 }
     }
@@ -12,7 +13,7 @@ export const commentApi = {
 
   // 댓글 생성
   async createComment(data: CreateCommentDto): Promise<Comment> {
-    const response = await fetch('/api/comments/add', {
+    const response = await fetch(getApiUrl('/comments/add'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -26,7 +27,7 @@ export const commentApi = {
 
   // 댓글 수정
   async updateComment(id: number, data: UpdateCommentDto): Promise<Comment> {
-    const response = await fetch(`/api/comments/${id}`, {
+    const response = await fetch(getApiUrl(`/comments/${id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -40,7 +41,7 @@ export const commentApi = {
 
   // 댓글 삭제
   async deleteComment(id: number): Promise<void> {
-    const response = await fetch(`/api/comments/${id}`, {
+    const response = await fetch(getApiUrl(`/comments/${id}`), {
       method: 'DELETE',
     })
     if (!response.ok) {
@@ -51,7 +52,7 @@ export const commentApi = {
 
   // 댓글 좋아요
   async likeComment(id: number, currentLikes: number): Promise<Comment> {
-    const response = await fetch(`/api/comments/${id}`, {
+    const response = await fetch(getApiUrl(`/comments/${id}`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ likes: currentLikes + 1 }),
