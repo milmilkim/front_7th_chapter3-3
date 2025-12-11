@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Plus } from "lucide-react"
 import { Button, Card, CardContent, CardHeader, CardTitle } from "../../shared/ui"
 import type { Post } from "../../entities/post"
@@ -32,8 +32,6 @@ const PostsManager = () => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
   const [currentPostId, setCurrentPostId] = useState<number>(0)
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
-  const [localSelectedTag, setLocalSelectedTag] = useState(selectedTag)
 
   // TanStack Query 훅들
   const { data: tagsData } = useTags()
@@ -60,6 +58,33 @@ const PostsManager = () => {
 
   const posts = currentPostsData?.posts || []
   const total = currentPostsData?.total || 0
+
+  // 정렬 로직
+  const sortedPosts = useMemo(() => {
+    if (!sortBy || sortBy === "none") return posts
+
+    const sorted = [...posts]
+
+    switch (sortBy) {
+      case "id":
+        sorted.sort((a, b) => (sortOrder === "asc" ? a.id - b.id : b.id - a.id))
+        break
+      case "title":
+        sorted.sort((a, b) =>
+          sortOrder === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title)
+        )
+        break
+      case "reactions":
+        sorted.sort((a, b) => {
+          const aLikes = a.reactions?.likes || 0
+          const bLikes = b.reactions?.likes || 0
+          return sortOrder === "asc" ? aLikes - bLikes : bLikes - aLikes
+        })
+        break
+    }
+
+    return sorted
+  }, [posts, sortBy, sortOrder])
 
   // 댓글 조회
   const { data: comments = [] } = useComments(selectedPost?.id || 0, !!selectedPost)
@@ -122,19 +147,17 @@ const PostsManager = () => {
     openModal("userModal")
   }
 
-  const handleSearchSubmit = () => {
-    setParams({ ...queryParams, searchQuery: localSearchQuery, skip: 0 })
-    updateURL({ searchQuery: localSearchQuery, skip: 0 })
+  const handleSearchSubmit = (query: string) => {
+    setParams({ ...queryParams, searchQuery: query, skip: 0 })
+    updateURL({ searchQuery: query, skip: 0 })
   }
 
   const handleTagChange = (tag: string) => {
-    setLocalSelectedTag(tag)
     setParams({ ...queryParams, selectedTag: tag, skip: 0 })
     updateURL({ selectedTag: tag, skip: 0 })
   }
 
   const handleTagClick = (tag: string) => {
-    setLocalSelectedTag(tag)
     updateURL({ selectedTag: tag })
   }
 
@@ -180,12 +203,11 @@ const PostsManager = () => {
         <div className="flex flex-col gap-4">
           {/* 검색 및 필터 */}
           <PostFilters
-            searchQuery={localSearchQuery}
-            selectedTag={localSelectedTag}
+            searchQuery={searchQuery}
+            selectedTag={selectedTag}
             sortBy={sortBy}
             sortOrder={sortOrder}
             tags={tagsData || []}
-            onSearchChange={setLocalSearchQuery}
             onSearchSubmit={handleSearchSubmit}
             onTagChange={handleTagChange}
             onSortByChange={handleSortByChange}
@@ -197,7 +219,7 @@ const PostsManager = () => {
             <div className="flex justify-center p-4">로딩 중...</div>
           ) : (
             <PostsTable
-              posts={posts}
+              posts={sortedPosts}
               searchQuery={searchQuery}
               selectedTag={selectedTag}
               onTagClick={handleTagClick}

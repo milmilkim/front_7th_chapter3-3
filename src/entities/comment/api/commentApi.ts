@@ -4,6 +4,9 @@ export const commentApi = {
   // 게시물의 댓글 조회
   async fetchComments(postId: number): Promise<CommentsResponse> {
     const response = await fetch(`/api/comments/post/${postId}`)
+    if (!response.ok) {
+      return { comments: [], total: 0, skip: 0, limit: 0 }
+    }
     return response.json()
   },
 

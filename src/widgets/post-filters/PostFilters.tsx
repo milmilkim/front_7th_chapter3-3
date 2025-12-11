@@ -8,8 +8,7 @@ interface PostFiltersProps {
   sortBy: string
   sortOrder: string
   tags: Tag[]
-  onSearchChange: (value: string) => void
-  onSearchSubmit: () => void
+  onSearchSubmit: (query: string) => void
   onTagChange: (value: string) => void
   onSortByChange: (value: string) => void
   onSortOrderChange: (value: string) => void
@@ -21,7 +20,6 @@ export const PostFilters = ({
   sortBy,
   sortOrder,
   tags,
-  onSearchChange,
   onSearchSubmit,
   onTagChange,
   onSortByChange,
@@ -33,11 +31,16 @@ export const PostFilters = ({
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            key={searchQuery}
             placeholder="게시물 검색..."
             className="pl-8"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && onSearchSubmit()}
+            defaultValue={searchQuery}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                const value = (e.target as HTMLInputElement).value
+                onSearchSubmit(value)
+              }
+            }}
           />
         </div>
       </div>

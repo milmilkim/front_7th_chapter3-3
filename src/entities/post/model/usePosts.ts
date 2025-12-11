@@ -85,15 +85,23 @@ export const useAddPost = () => {
       return { ...newPost, author }
     },
     onSuccess: (newPost) => {
-      // 모든 posts 쿼리 캐시 업데이트 (fake JSON이라 서버에 저장 안 됨)
-      queryClient.setQueriesData({ queryKey: ["posts"] }, (old: PostsResponse | undefined) => {
-        if (!old) return old
-        return {
-          ...old,
-          posts: [newPost, ...old.posts],
-          total: old.total + 1,
+      queryClient.setQueriesData(
+        {
+          queryKey: ["posts"],
+          predicate: (query) => {
+            const params = query.queryKey[1] as { skip: number; limit: number } | undefined
+            return params?.skip === 0
+          },
+        },
+        (old: PostsResponse | undefined) => {
+          if (!old) return old
+          return {
+            ...old,
+            posts: [newPost, ...old.posts],
+            total: old.total + 1,
+          }
         }
-      })
+      )
     },
   })
 }
