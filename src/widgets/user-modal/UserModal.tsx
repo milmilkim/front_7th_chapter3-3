@@ -1,13 +1,15 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
-import type { User } from "../../entities/user"
+import { useUIStore, usePostsStore } from "../../shared/store"
+import { useUserDetail } from "../../entities/user"
 
-interface UserModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  user: User | null | undefined
-}
+export const UserModal = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const { selectedUserId } = usePostsStore()
+  const { data: user } = useUserDetail(selectedUserId)
 
-export const UserModal = ({ open, onOpenChange, user }: UserModalProps) => {
+  const open = isModalOpen("userModal")
+  const onOpenChange = (open: boolean) => !open && closeModal("userModal")
+
   if (!user) return null
 
   return (

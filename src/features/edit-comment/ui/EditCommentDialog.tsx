@@ -1,29 +1,34 @@
 import { useState, useEffect } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
-import type { Comment } from "../../../entities/comment"
+import { useUIStore, usePostsStore } from "../../../shared/store"
+import { useUpdateComment } from "../../../entities/comment"
 
-interface EditCommentDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  comment: Comment | null
-  onSubmit: (id: number, body: string) => void
-}
-
-export const EditCommentDialog = ({ open, onOpenChange, comment, onSubmit }: EditCommentDialogProps) => {
+export const EditCommentDialog = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const { selectedComment } = usePostsStore()
+  const updateCommentMutation = useUpdateComment()
+  
   const [body, setBody] = useState("")
 
   useEffect(() => {
-    if (comment) {
-      setBody(comment.body)
+    if (selectedComment) {
+      setBody(selectedComment.body)
     }
-  }, [comment])
+  }, [selectedComment])
 
-  const handleSubmit = () => {
-    if (comment) {
-      onSubmit(comment.id, body)
-      onOpenChange(false)
+  const handleSubmit = async () => {
+    if (selectedComment) {
+      await updateCommentMutation.mutateAsync({
+        id: selectedComment.id,
+        body,
+        postId: selectedComment.postId,
+      })
+      closeModal("editComment")
     }
   }
+
+  const open = isModalOpen("editComment")
+  const onOpenChange = (open: boolean) => !open && closeModal("editComment")
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

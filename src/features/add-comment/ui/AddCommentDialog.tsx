@@ -1,21 +1,23 @@
 import { useState } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
+import { useUIStore, usePostsStore } from "../../../shared/store"
+import { useAddComment } from "../../../entities/comment"
 
-interface AddCommentDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  postId: number
-  onSubmit: (data: { body: string; postId: number; userId: number }) => void
-}
-
-export const AddCommentDialog = ({ open, onOpenChange, postId, onSubmit }: AddCommentDialogProps) => {
+export const AddCommentDialog = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const { currentPostId } = usePostsStore()
+  const addCommentMutation = useAddComment()
+  
   const [body, setBody] = useState("")
 
-  const handleSubmit = () => {
-    onSubmit({ body, postId, userId: 1 })
+  const handleSubmit = async () => {
+    await addCommentMutation.mutateAsync({ body, postId: currentPostId, userId: 1 })
     setBody("")
-    onOpenChange(false)
+    closeModal("addComment")
   }
+
+  const open = isModalOpen("addComment")
+  const onOpenChange = (open: boolean) => !open && closeModal("addComment")
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

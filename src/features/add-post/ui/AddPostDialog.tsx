@@ -1,24 +1,26 @@
 import { useState } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
+import { useUIStore } from "../../../shared/store"
+import { useAddPost } from "../../../entities/post"
 
-interface AddPostDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (data: { title: string; body: string; userId: number }) => void
-}
-
-export const AddPostDialog = ({ open, onOpenChange, onSubmit }: AddPostDialogProps) => {
+export const AddPostDialog = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const addPostMutation = useAddPost()
+  
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [userId, setUserId] = useState(1)
 
-  const handleSubmit = () => {
-    onSubmit({ title, body, userId })
+  const handleSubmit = async () => {
+    await addPostMutation.mutateAsync({ title, body, userId })
     setTitle("")
     setBody("")
     setUserId(1)
-    onOpenChange(false)
+    closeModal("addPost")
   }
+
+  const open = isModalOpen("addPost")
+  const onOpenChange = (open: boolean) => !open && closeModal("addPost")
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

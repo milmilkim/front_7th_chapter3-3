@@ -1,31 +1,32 @@
 import { useState, useEffect } from "react"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
-import type { Post } from "../../../entities/post"
+import { useUIStore, usePostsStore } from "../../../shared/store"
+import { useUpdatePost } from "../../../entities/post"
 
-interface EditPostDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  post: Post | null
-  onSubmit: (id: number, data: { title: string; body: string }) => void
-}
-
-export const EditPostDialog = ({ open, onOpenChange, post, onSubmit }: EditPostDialogProps) => {
+export const EditPostDialog = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const { selectedPost } = usePostsStore()
+  const updatePostMutation = useUpdatePost()
+  
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
 
   useEffect(() => {
-    if (post) {
-      setTitle(post.title)
-      setBody(post.body)
+    if (selectedPost) {
+      setTitle(selectedPost.title)
+      setBody(selectedPost.body)
     }
-  }, [post])
+  }, [selectedPost])
 
-  const handleSubmit = () => {
-    if (post) {
-      onSubmit(post.id, { title, body })
-      onOpenChange(false)
+  const handleSubmit = async () => {
+    if (selectedPost) {
+      await updatePostMutation.mutateAsync({ id: selectedPost.id, data: { title, body } })
+      closeModal("editPost")
     }
   }
+
+  const open = isModalOpen("editPost")
+  const onOpenChange = (open: boolean) => !open && closeModal("editPost")
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

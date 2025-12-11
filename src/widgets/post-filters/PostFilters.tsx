@@ -1,30 +1,32 @@
 import { Search } from "lucide-react"
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../shared/ui"
-import type { Tag } from "../../entities/tag"
+import { useTags } from "../../entities/tag"
+import { useQueryParams } from "../../shared/hooks"
 
-interface PostFiltersProps {
-  searchQuery: string
-  selectedTag: string
-  sortBy: string
-  sortOrder: string
-  tags: Tag[]
-  onSearchSubmit: (query: string) => void
-  onTagChange: (value: string) => void
-  onSortByChange: (value: string) => void
-  onSortOrderChange: (value: string) => void
-}
+export const PostFilters = () => {
+  const { data: tags = [] } = useTags()
+  const { searchQuery, selectedTag, sortBy, sortOrder, updateURL, setParams } = useQueryParams()
 
-export const PostFilters = ({
-  searchQuery,
-  selectedTag,
-  sortBy,
-  sortOrder,
-  tags,
-  onSearchSubmit,
-  onTagChange,
-  onSortByChange,
-  onSortOrderChange,
-}: PostFiltersProps) => {
+  const handleSearchSubmit = (query: string) => {
+    setParams((prev) => ({ ...prev, searchQuery: query, skip: 0 }))
+    updateURL({ searchQuery: query, skip: 0 })
+  }
+
+  const handleTagChange = (tag: string) => {
+    setParams((prev) => ({ ...prev, selectedTag: tag, skip: 0 }))
+    updateURL({ selectedTag: tag, skip: 0 })
+  }
+
+  const handleSortByChange = (newSortBy: string) => {
+    setParams((prev) => ({ ...prev, sortBy: newSortBy }))
+    updateURL({ sortBy: newSortBy })
+  }
+
+  const handleSortOrderChange = (newSortOrder: string) => {
+    setParams((prev) => ({ ...prev, sortOrder: newSortOrder }))
+    updateURL({ sortOrder: newSortOrder })
+  }
+
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -38,13 +40,13 @@ export const PostFilters = ({
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 const value = (e.target as HTMLInputElement).value
-                onSearchSubmit(value)
+                handleSearchSubmit(value)
               }
             }}
           />
         </div>
       </div>
-      <Select value={selectedTag} onValueChange={onTagChange}>
+      <Select value={selectedTag} onValueChange={handleTagChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="태그 선택" />
         </SelectTrigger>
@@ -57,7 +59,7 @@ export const PostFilters = ({
           ))}
         </SelectContent>
       </Select>
-      <Select value={sortBy} onValueChange={onSortByChange}>
+      <Select value={sortBy} onValueChange={handleSortByChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="정렬 기준" />
         </SelectTrigger>
@@ -68,7 +70,7 @@ export const PostFilters = ({
           <SelectItem value="reactions">반응</SelectItem>
         </SelectContent>
       </Select>
-      <Select value={sortOrder} onValueChange={onSortOrderChange}>
+      <Select value={sortOrder} onValueChange={handleSortOrderChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="정렬 순서" />
         </SelectTrigger>

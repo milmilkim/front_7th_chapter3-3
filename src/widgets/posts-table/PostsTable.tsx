@@ -3,30 +3,37 @@ import { Edit2, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../shared/ui"
 import { DeletePostButton } from "../../features/delete-post"
 import type { Post } from "../../entities/post"
+import { useUIStore, usePostsStore } from "../../shared/store"
+import { useQueryParams } from "../../shared/hooks"
+import { highlightText } from "../../shared/lib"
 
 interface PostsTableProps {
   posts: Post[]
-  searchQuery: string
-  selectedTag: string
-  onTagClick: (tag: string) => void
-  onPostDetail: (post: Post) => void
-  onEditPost: (post: Post) => void
-  onDeletePost: (id: number) => void
-  onUserClick: (author: { id: number; username: string; image: string }) => void
-  highlightText: (text: string, highlight: string) => React.ReactElement | null
 }
 
-export const PostsTable = ({
-  posts,
-  searchQuery,
-  selectedTag,
-  onTagClick,
-  onPostDetail,
-  onEditPost,
-  onDeletePost,
-  onUserClick,
-  highlightText,
-}: PostsTableProps) => {
+export const PostsTable = ({ posts }: PostsTableProps) => {
+  const { openModal } = useUIStore()
+  const { setSelectedPost, setSelectedUserId } = usePostsStore()
+  const { searchQuery, selectedTag, updateURL } = useQueryParams()
+
+  const handleTagClick = (tag: string) => {
+    updateURL({ selectedTag: tag })
+  }
+
+  const handlePostDetail = (post: Post) => {
+    setSelectedPost(post)
+    openModal("postDetail")
+  }
+
+  const handleEditPost = (post: Post) => {
+    setSelectedPost(post)
+    openModal("editPost")
+  }
+
+  const handleUserClick = (author: { id: number; username: string; image: string }) => {
+    setSelectedUserId(author.id)
+    openModal("userModal")
+  }
   return (
     <Table>
       <TableHeader>
@@ -55,7 +62,7 @@ export const PostsTable = ({
                           ? "text-white bg-blue-500 hover:bg-blue-600"
                           : "text-blue-800 bg-blue-100 hover:bg-blue-200"
                       }`}
-                      onClick={() => onTagClick(tag)}
+                      onClick={() => handleTagClick(tag)}
                     >
                       {tag}
                     </span>
@@ -66,7 +73,7 @@ export const PostsTable = ({
             <TableCell>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => post.author && onUserClick(post.author)}
+                onClick={() => post.author && handleUserClick(post.author)}
               >
                 <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
                 <span>{post.author?.username}</span>
@@ -82,13 +89,13 @@ export const PostsTable = ({
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => onPostDetail(post)}>
+                <Button variant="ghost" size="sm" onClick={() => handlePostDetail(post)}>
                   <MessageSquare className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => onEditPost(post)}>
+                <Button variant="ghost" size="sm" onClick={() => handleEditPost(post)}>
                   <Edit2 className="w-4 h-4" />
                 </Button>
-                <DeletePostButton postId={post.id} onDelete={onDeletePost} />
+                <DeletePostButton postId={post.id} />
               </div>
             </TableCell>
           </TableRow>

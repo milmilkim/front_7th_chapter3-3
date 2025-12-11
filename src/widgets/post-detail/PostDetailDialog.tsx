@@ -1,54 +1,32 @@
 import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
 import { CommentsList } from "../comments-list"
-import type { Post } from "../../entities/post"
-import type { Comment } from "../../entities/comment"
+import { useUIStore, usePostsStore } from "../../shared/store"
+import { useComments } from "../../entities/comment"
+import { useQueryParams } from "../../shared/hooks"
+import { highlightText } from "../../shared/lib"
 
-interface PostDetailDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  post: Post | null
-  comments: Comment[]
-  searchQuery: string
-  onAddComment: (postId: number) => void
-  onEditComment: (comment: Comment) => void
-  onDeleteComment: (id: number, postId: number) => void
-  onLikeComment: (id: number, postId: number) => void
-  highlightText: (text: string, highlight: string) => React.ReactElement | null
-}
+export const PostDetailDialog = () => {
+  const { isModalOpen, closeModal } = useUIStore()
+  const { selectedPost } = usePostsStore()
+  const { searchQuery } = useQueryParams()
+  
+  const { data: comments = [] } = useComments(selectedPost?.id || 0, !!selectedPost)
 
-export const PostDetailDialog = ({
-  open,
-  onOpenChange,
-  post,
-  comments,
-  searchQuery,
-  onAddComment,
-  onEditComment,
-  onDeleteComment,
-  onLikeComment,
-  highlightText,
-}: PostDetailDialogProps) => {
-  if (!post) return null
+  const open = isModalOpen("postDetail")
+  const onOpenChange = (open: boolean) => !open && closeModal("postDetail")
+
+  if (!selectedPost) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{highlightText(post.title, searchQuery)}</DialogTitle>
+          <DialogTitle>{highlightText(selectedPost.title, searchQuery)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <p>{highlightText(post.body, searchQuery)}</p>
-          <CommentsList
-            postId={post.id}
-            comments={comments}
-            searchQuery={searchQuery}
-            onAddComment={onAddComment}
-            onEditComment={onEditComment}
-            onDeleteComment={onDeleteComment}
-            onLikeComment={onLikeComment}
-            highlightText={highlightText}
-          />
+          <p>{highlightText(selectedPost.body, searchQuery)}</p>
+          <CommentsList postId={selectedPost.id} comments={comments} />
         </div>
       </DialogContent>
     </Dialog>
