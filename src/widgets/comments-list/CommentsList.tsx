@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Edit2, Plus } from "lucide-react"
 import { Button } from "../../shared/ui"
 import { DeleteCommentButton } from "../../features/delete-comment"

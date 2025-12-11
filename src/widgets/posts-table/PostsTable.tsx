@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Edit2, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../shared/ui"
 import { DeletePostButton } from "../../features/delete-post"

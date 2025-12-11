@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../shared/ui"
 import { CommentsList } from "../comments-list"
 import { useUIStore, usePostsStore } from "../../shared/store"
